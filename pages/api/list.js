@@ -1,4 +1,7 @@
+const fs = require("fs");
 import data from './cards.json';
+
+const FILENAME = './contents.json'
 
 export default (req, res) => {
     if (req.method === 'POST') {
@@ -8,12 +11,22 @@ export default (req, res) => {
     }
 };
 
-const post = (req, res) => {
+const post = async (req, res) => {
+    const contents = req.body
+    writeToFile(FILENAME, contents)
     res.statusCode = 200;
-    res.json({ message: 'Hello' });
+    res.json({'message': 'ok'})
 };
 
 const get = (req, res) => {
     res.statusCode = 200;
-    res.json(data);
+    res.json(readFromFile(FILENAME));
 };
+
+const readFromFile = (path) => {
+    return fs.readFileSync(path)
+}
+
+const writeToFile = (path, contents) => {
+    fs.writeFileSync(path, contents);
+}

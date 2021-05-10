@@ -28,9 +28,24 @@ export default function Home() {
         return 'Error';
     }
 
-    const updateData = (key, value) => {
-        mutate('/api/list', { ...lists, [key]: value }, false);
-    };
+    const postList = (lists) => {
+        fetch('/api/list', {
+            method: 'POST',
+            body: lists
+        })
+
+    }
+
+    const updateList =  async (list_id, list, send = true) => {
+        mutate('/api/list', { ...lists, [list_id]: list }, false)
+        if (send == true) {
+        await fetch('/api/list', {
+                method: 'POST',
+                body: JSON.stringify({ ...lists, [list_id]: list })
+              })
+        mutate('/api/list')
+    }
+    }
 
     return (
         <div className="flex h-screen w-max min-w-full p-2 bg-blue-400">
@@ -41,7 +56,7 @@ export default function Home() {
                         list_id={key}
                         list={lists[key]}
                         setIsModalShowing={setIsModalShowing}
-                        updateData={updateData}
+                        updateList={(...args) => updateList(key, ...args)}
                     />
                 );
             })}
