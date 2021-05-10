@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useSWR, { mutate } from 'swr';
 import Card from './Card';
 import Divider from './Divider';
 
@@ -6,41 +7,89 @@ const Title = ({ title }) => (
     <span className="font-bold py-1 self-center">{title}</span>
 );
 
-const List = ({ list, list_id, updateList, ...props }) => {
-    const { title, cards, isBlockedIndex } = list;
-    const [activeCards, setActiveCards] = useState(cards)
-    const updateCardOrder = (index) => {
-        let updatedCards = [...cards]
-        updatedCards[index] = {...cards[index], isBlocked: !cards[index].isBlocked}
+const List = ({ list, list_id, updateList }) => {
+    const { title, cards } = list;
+    const [showAddCard, setShowAddCard] = useState(false);
+
+    const setCardBlocked = (index) => {
+        let updatedCards = [...cards];
+        updatedCards[index] = {
+            ...cards[index],
+            isBlocked: !cards[index].isBlocked,
+        };
         updateList({ ...list, cards: updatedCards });
-    }
+    };
+
+    const sendListUpdate = (payload) => {
+        mutate('/api/lists', async (lists) => {
+            const updatedList = await fetch(`/api/lists/${list_id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(payload),
+            });
+
+            lists[list_id] = updatedList;
+            return lists;
+        });
+    };
+
     const addCard = (title) => {
-        let updatedCards = [...cards]
-        updatedCards.push({title, id: title, isBlocked: false, content: null, position: cards.length})
-        updatedCards = updatedCards.filter(card => !card.isEditable)
-        updateList({...list, cards: updatedCards})
-    }
+        const newCard = {
+            id: `${cards.length}`,
+            title,
+            isBlocked: false,
+            position: cards.length,
+        };
+        const payload = { ...list, cards: [...cards, newCard] };
+        sendListUpdate(payload);
+
+        setShowAddCard(false);
+    };
+
+    const deleteCard = (id) => {
+        const payload = {
+            ...list,
+            cards: cards.filter((card) => card.id != id),
+        };
+        sendListUpdate(payload);
+    };
+
+    const handleEscape = (e) => {
+        if (e.key == 'Escape') {
+            setShowAddCard(false);
+        }
+    };
+    useEffect(() => window.addEventListener('keydown', handleEscape));
+
     return (
         <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-gray-200 overflow-x-auto flex-shrink-0 transition-all">
             <Title title={title} />
-            <div className='flex-grow overflow-y-auto p-1'>
-            {cards.map((card, index) => {
-                return (
+            <div className="flex-grow overflow-y-auto p-1">
+                {cards.map((card, index) => {
+                    return (
                         <Card
                             key={card.id}
-                            updateList={() => updateCardOrder(index)}
-                            addCard={addCard}
+                            updateList={() => setCardBlocked(index)}
+                            deleteCard={() => deleteCard(card.id)}
                             {...card}
-
                         />
-                );
-            })}
+                    );
+                })}
+                {showAddCard && (
+                    <Card
+                        key="addCard"
+                        isEditable={true}
+                        addCard={addCard}
+                        hideAddCard={() => setShowAddCard(false)}
+                    />
+                )}
             </div>
-            <div className="rounded-md p-2 text-sm text-gray-600 hover:bg-gray-300 hover:text-gray-800"
-                 onClick={() => updateList({...list, cards: [...cards, {id: list.cards.length, title: list.cards.length, isBlocked: false, isEditable: true}]}, false)}>
+            <div
+                className="rounded-md p-2 text-sm text-gray-600 hover:bg-gray-300 hover:text-gray-800"
+                onClick={() => setShowAddCard(true)}
+            >
                 + &nbsp; Add a card
             </div>
-      </div>
+        </div>
     );
 };
 
