@@ -1,37 +1,35 @@
-import Head from 'next/head';
-import List from '../components/List';
-import Modal from '../components/Modal';
-import { useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import List from '../components/List'
+import Modal from '../components/Modal'
+import { useState } from 'react'
+import useSWR, { mutate } from 'swr'
 
-const fetcher = (url) => fetch(url).then((r) => r.json());
-const compare = (a, b) => JSON.stringify(a) == JSON.stringify(b);
+const fetcher = (url) => fetch(url).then((r) => r.json())
 
 const useLists = () => {
-    const { data, error } = useSWR(`/api/lists`, fetcher);
+    const { data, error } = useSWR('/api/lists', fetcher)
 
     return {
         lists: data,
         isLoading: !error && !data,
         isError: error,
-    };
-};
+    }
+}
 
 export default function Home() {
-    const [isModalShowing, setIsModalShowing] = useState(false);
+    const [isModalShowing, setIsModalShowing] = useState(false)
 
-    const { lists, isLoading, isError } = useLists();
+    const { lists } = useLists()
 
     const updateList = async (list_id, list, send = true) => {
-        mutate('/api/lists', { ...lists, [list_id]: list }, false);
+        mutate('/api/lists', { ...lists, [list_id]: list }, false)
         if (send == true) {
             await fetch('/api/lists', {
                 method: 'POST',
                 body: JSON.stringify({ ...lists, [list_id]: list }),
-            });
-            mutate('/api/lists');
+            })
+            mutate('/api/lists')
         }
-    };
+    }
 
     const showLists = (lists) =>
         Object.keys(lists).map((key) => {
@@ -43,8 +41,8 @@ export default function Home() {
                     setIsModalShowing
                     updateList={updatedList => updateList(key, updatedList)}
                 />
-            );
-        });
+            )
+        })
 
     return (
         <div className="flex h-screen w-max min-w-full p-2 bg-blue-400">
@@ -52,5 +50,5 @@ export default function Home() {
                 showLists({ list_4: { title: 'waiting', cards: [] } })}
             {isModalShowing && <Modal setIsModalShowing={setIsModalShowing} />}
         </div>
-    );
+    )
 }
