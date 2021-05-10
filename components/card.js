@@ -19,7 +19,6 @@ const Delete = () => {
 const Card = ({
     title,
     isBlocked,
-    // setIsModalShowing,
     isEditable,
     updateList,
     addCard,
@@ -32,10 +31,10 @@ const Card = ({
         <div
             className={`flex group rounded-md p-2 mb-2 shadow-md text-left hover:cursor-pointer border-box
             ${
-        isBlocked
-            ? 'bg-gray-200 hover:bg-green-300 text-gray-700'
-            : 'bg-gray-50 hover:bg-green-100'
-        } `}
+                isBlocked
+                    ? 'bg-gray-200 hover:bg-green-300 text-gray-700'
+                    : 'bg-gray-50 hover:bg-green-100'
+            } `}
         >
             {isEditable ? (
                 <input

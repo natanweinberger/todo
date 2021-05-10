@@ -5,11 +5,32 @@ import Card from './Card'
 const Title = ({ title, updateTitle }) => {
     const [isInEditMode, setIsInEditMode] = useState(false)
     if (isInEditMode) {
-        return <span className="font-bold py-1 self-center">
-            <input type="text" placeholder={title} onEnter={(e) => updateTitle(e.target.value) && setIsInEditMode(false)}/>
-        </span>
+        return (
+            <span className="font-bold py-1 self-center">
+                <input
+                    className='pl-1'
+                    autoFocus
+                    type="text"
+                    placeholder={title}
+                    onKeyPress={(e) => {
+                        if (e.key == 'Enter') {
+                            updateTitle(e.target.value)
+                            setIsInEditMode(false)
+                        }
+                    }}
+                    onBlur={() => setIsInEditMode(false)}
+                />
+            </span>
+        )
     }
-    return <span className="font-bold py-1 self-center" onClick={setIsInEditMode(true)}>{title}</span>
+    return (
+        <span
+            className="font-bold py-1 self-center"
+            onClick={() => setIsInEditMode(true)}
+        >
+            {title}
+        </span>
+    )
 }
 
 const List = ({ list, list_id, updateList }) => {
@@ -67,7 +88,10 @@ const List = ({ list, list_id, updateList }) => {
 
     return (
         <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-gray-200 overflow-x-auto flex-shrink-0 transition-all">
-            <Title title={title} updateTitle={() => sendListUpdate({title, ...list})} />
+            <Title
+                title={title}
+                updateTitle={(title) => sendListUpdate({ ...list, title })}
+            />
             <div className="flex-grow overflow-y-auto p-1">
                 {cards.map((card, index) => {
                     return (

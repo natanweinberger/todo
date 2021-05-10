@@ -35,11 +35,11 @@ export default function Home() {
         Object.keys(lists).map((key) => {
             return (
                 <List
-                    key
+                    key={key}
                     list_id={key}
                     list={lists[key]}
-                    setIsModalShowing
-                    updateList={updatedList => updateList(key, updatedList)}
+                    setIsModalShowing={setIsModalShowing}
+                    updateList={(updatedList) => updateList(key, updatedList)}
                 />
             )
         })
