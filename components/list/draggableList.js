@@ -1,6 +1,7 @@
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
-const DraggableList = ({items, child, onDragEnd}) => {
+// Each item must have a field 'id'
+const DraggableList = ({items, component, onDragEnd}) => {
     return <DragDropContext
                     onDragEnd={result =>
                         onDragEnd(result)
@@ -24,7 +25,7 @@ const DraggableList = ({items, child, onDragEnd}) => {
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
-                                                {child(item, index)}
+                                                {component(item, index)}
                                             </div>
                                         )}
                                     </Draggable>

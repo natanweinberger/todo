@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { mutate } from 'swr'
-import Card from './Card'
-import Title from './list/title'
-import DraggableList from './list/draggableList'
+import Card from '@/components/Card'
+import Title from '@/components/list/title'
+import DraggableList from '@/components/list/draggableList'
 
 
 const List = ({ list, list_id, updateList }) => {
@@ -93,7 +93,7 @@ const List = ({ list, list_id, updateList }) => {
             <div className="flex-grow p-1">
                 <DraggableList onDragEnd={result => sendReorder(cards, result)}
                 items={cards}
-                child={(card, index) => <Card title={card.title} key={card.id} isBlocked={card.isBlocked} deleteCard={() => deleteCard(card.id)} setBlocked={() => setCardBlocked(index)} />}/>
+                component={(card, index) => <Card title={card.title} key={card.id} isBlocked={card.isBlocked} deleteCard={() => deleteCard(card.id)} setBlocked={() => setCardBlocked(index)} />}/>
                 {showAddCard && (
                     <Card
                         key="addCard"
