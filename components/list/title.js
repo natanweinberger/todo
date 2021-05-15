@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const Title = ({ title, updateTitle }) => {
     const [isInEditMode, setIsInEditMode] = useState(false)
+
     if (isInEditMode) {
         return (
             <span className="font-bold py-1 self-center">

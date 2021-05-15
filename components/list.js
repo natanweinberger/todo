@@ -3,13 +3,13 @@ import { mutate } from 'swr'
 import Card from '@/components/Card'
 import Title from '@/components/list/title'
 import DraggableList from '@/components/list/draggableList'
+import { reorder } from '@/components/list/utils'
 
 const List = ({ list, list_id, updateList }) => {
     const { title, cards } = list
     const [showAddCard, setShowAddCard] = useState(false)
 
     const setCardBlocked = (index) => {
-        console.log(index)
         let updatedCards = [...cards]
         updatedCards[index] = {
             ...cards[index],
@@ -56,21 +56,13 @@ const List = ({ list, list_id, updateList }) => {
         sendListUpdate(payload)
     }
 
-    const handleEscape = (e) => {
-        if (e.key == 'Escape') {
-            setShowAddCard(false)
+    const onEscapeEffect = (event, callback) => {
+        if (event.key == 'Escape') {
+            callback()
         }
     }
 
-    const reorder = (list, startIndex, endIndex) => {
-        const result = Array.from(list)
-        const [removed] = result.splice(startIndex, 1)
-        result.splice(endIndex, 0, removed)
-
-        return result
-    }
-
-    useEffect(() => window.addEventListener('keydown', handleEscape))
+    useEffect(() => window.addEventListener('keydown', (event) => onEscapeEffect(event, setShowAddCard(false))))
 
     const sendReorder = (cards, result) => {
         sendListUpdate({
