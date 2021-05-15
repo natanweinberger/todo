@@ -44,8 +44,6 @@ export const sendListUpdate = async (payload) => {
     })
 }
 
-
-
 export const handleEscape = (e) => {
     if (e.key == 'Escape') {
         setShowAddCard(false)

@@ -1,1 +1,78 @@
-{"list_1":{"title":"Mortgage","cards":[{"id":"id2","title":"Make appointment at HSBC","content":"description of second card","position":1,"isBlocked":false},{"id":"id1","title":"Send Alessia approval for evaluation","content":"description of first card","position":0,"isBlocked":false},{"id":"id3","title":"Get the funding","content":"description of third card","position":2,"isBlocked":false}]},"list_2":{"title":"Get a new job","cards":[{"id":"id1","title":"Reach out to Thierry","content":"description of first card","position":0,"isBlocked":false},{"id":"id2","title":"Hear back from Marc-Antoine","content":"description of second card","position":1,"isBlocked":false},{"id":"id3","title":"Hear back from Shopify","content":"description of third card","position":2,"isBlocked":false},{"id":"id4","title":"Hear back from Slack","content":"description of third card","position":2,"isBlocked":false}]},"list_3":{"title":"Bathroom","cards":[{"id":"0","title":"Pay for ceramics","isBlocked":false,"position":0},{"id":"1","title":"Pay for tile","isBlocked":false,"position":1}]}}
+{
+    "list_1": {
+        "title": "Mortgage",
+        "cards": [
+            {
+                "id": "id2",
+                "title": "Make appointment at HSBC",
+                "content": "description of second card",
+                "position": 1,
+                "isBlocked": false
+            },
+            {
+                "id": "id1",
+                "title": "Send Alessia approval for evaluation",
+                "content": "description of first card",
+                "position": 0,
+                "isBlocked": false
+            },
+            {
+                "id": "id3",
+                "title": "Get the funding",
+                "content": "description of third card",
+                "position": 2,
+                "isBlocked": false
+            }
+        ]
+    },
+    "list_2": {
+        "title": "Get a new job",
+        "cards": [
+            {
+                "id": "id1",
+                "title": "Reach out to Thierry",
+                "content": "description of first card",
+                "position": 0,
+                "isBlocked": false
+            },
+            {
+                "id": "id2",
+                "title": "Hear back from Marc-Antoine",
+                "content": "description of second card",
+                "position": 1,
+                "isBlocked": false
+            },
+            {
+                "id": "id3",
+                "title": "Hear back from Shopify",
+                "content": "description of third card",
+                "position": 2,
+                "isBlocked": false
+            },
+            {
+                "id": "id4",
+                "title": "Hear back from Slack",
+                "content": "description of third card",
+                "position": 2,
+                "isBlocked": false
+            }
+        ]
+    },
+    "list_3": {
+        "title": "Bathroom",
+        "cards": [
+            {
+                "id": "0",
+                "title": "Pay for ceramics",
+                "isBlocked": false,
+                "position": 0
+            },
+            {
+                "id": "1",
+                "title": "Pay for tile",
+                "isBlocked": false,
+                "position": 1
+            }
+        ]
+    }
+}

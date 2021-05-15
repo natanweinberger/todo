@@ -4,7 +4,6 @@ import Card from '@/components/Card'
 import Title from '@/components/list/title'
 import DraggableList from '@/components/list/draggableList'
 
-
 const List = ({ list, list_id, updateList }) => {
     const { title, cards } = list
     const [showAddCard, setShowAddCard] = useState(false)
@@ -62,7 +61,7 @@ const List = ({ list, list_id, updateList }) => {
             setShowAddCard(false)
         }
     }
-    
+
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list)
         const [removed] = result.splice(startIndex, 1)
@@ -75,13 +74,13 @@ const List = ({ list, list_id, updateList }) => {
 
     const sendReorder = (cards, result) => {
         sendListUpdate({
-                            ...list,
-                            cards: reorder(
-                                cards,
-                                result.source.index,
-                                result.destination.index
-                            ),
-                        })
+            ...list,
+            cards: reorder(
+                cards,
+                result.source.index,
+                result.destination.index
+            ),
+        })
     }
 
     return (
@@ -91,9 +90,19 @@ const List = ({ list, list_id, updateList }) => {
                 updateTitle={(title) => sendListUpdate({ ...list, title })}
             />
             <div className="flex-grow p-1">
-                <DraggableList onDragEnd={result => sendReorder(cards, result)}
-                items={cards}
-                component={(card, index) => <Card title={card.title} key={card.id} isBlocked={card.isBlocked} deleteCard={() => deleteCard(card.id)} setBlocked={() => setCardBlocked(index)} />}/>
+                <DraggableList
+                    onDragEnd={(result) => sendReorder(cards, result)}
+                    items={cards}
+                    component={(card, index) => (
+                        <Card
+                            title={card.title}
+                            key={card.id}
+                            isBlocked={card.isBlocked}
+                            deleteCard={() => deleteCard(card.id)}
+                            setBlocked={() => setCardBlocked(index)}
+                        />
+                    )}
+                />
                 {showAddCard && (
                     <Card
                         key="addCard"
