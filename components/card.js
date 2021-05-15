@@ -20,7 +20,7 @@ const Card = ({
     title,
     isBlocked,
     isEditable,
-    updateList,
+    setBlocked,
     addCard,
     hideAddCard,
     deleteCard,
@@ -49,7 +49,7 @@ const Card = ({
                 />
             ) : (
                 <div className="flex w-full">
-                    <div className="flex-grow p-1" onClick={updateList}>
+                    <div className="flex-grow p-1" onClick={index => setBlocked(index)}>
                         {title}
                     </div>
                     <div
