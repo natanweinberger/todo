@@ -1,7 +1,9 @@
 import List from '../components/List'
 import Modal from '../components/Modal'
-import { useState } from 'react'
+import { useAuth } from '../lib/auth'
+import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
+import { getData } from '@/lib/db'
 
 const fetcher = (url) => fetch(url).then((r) => r.json())
 
@@ -15,7 +17,42 @@ const useLists = () => {
     }
 }
 
-export default function Home() {
+const onEscapeEffect = (event, callback) => {
+    if (event.key == 'Escape') {
+        callback()
+    }
+}
+
+const Header = () => {
+    const auth = useAuth()
+    return (
+        <div className="flex px-4 mt-2 text-white justify-between items-center">
+            <div>
+                Current user: <code>{auth?.user?.email || 'None'}</code>
+            </div>
+            {!auth.user && (
+                <button
+                    className="bg-white text-blue-400 p-2 rounded"
+                    onClick={(e) =>
+                        auth.signin('naweinberger@gmail.com', 'password')
+                    }
+                >
+                    Sign In
+                </button>
+            )}
+            {auth.user && (
+                <button
+                    className="bg-white text-blue-400 p-2 rounded"
+                    onClick={(e) => auth.signout()}
+                >
+                    Sign Out
+                </button>
+            )}
+        </div>
+    )
+}
+
+export default function Home({ data }) {
     const [isModalShowing, setIsModalShowing] = useState(false)
 
     const { lists } = useLists()
@@ -24,11 +61,24 @@ export default function Home() {
         mutate('/api/lists', { ...lists, [list_id]: list }, false)
         if (send == true) {
             await fetch('/api/lists', {
-                method: 'POST',
+                method: 'PATCH',
                 body: JSON.stringify({ ...lists, [list_id]: list }),
             })
             mutate('/api/lists')
         }
+    }
+
+    const addList = async () => {
+        const tempId = 'temp'
+        mutate(
+            '/api/lists',
+            { ...lists, [tempId]: { title: 'New list', cards: [] } },
+            false
+        )
+        await fetch('/api/lists', {
+            method: 'POST',
+        })
+        mutate('/api/lists')
     }
 
     const showLists = (lists) =>
@@ -44,11 +94,39 @@ export default function Home() {
             )
         })
 
+    useEffect(() =>
+        window.addEventListener('keydown', (event) =>
+            onEscapeEffect(event, () => console.log('test'))
+        )
+    )
+
     return (
-        <div className="flex h-screen w-max min-w-full p-2 bg-blue-400">
-            {(lists && showLists(lists)) ||
-                showLists({ list_4: { title: 'waiting', cards: [] } })}
-            {isModalShowing && <Modal setIsModalShowing={setIsModalShowing} />}
+        <div className="absolute inset-0">
+            {/* Fix viewport height on mobile: https://stackoverflow.com/a/66501522/804237 */}
+            <div className="flex flex-col h-full bg-blue-400">
+                <Header />
+                <div className="flex flex-grow overflow-x-auto p-2">
+                    {(lists && showLists(lists)) ||
+                        showLists({ list_4: { title: 'waiting', cards: [] } })}
+                    <div
+                        className="flex flex-none rounded-full h-12 w-12 mx-2 items-center justify-center self-center bg-white hover:bg-gray-200 active:bg-gray-300"
+                        onClick={addList}
+                    >
+                        <div>+</div>
+                    </div>
+                    <div className="w-2 flex-none"> </div>
+                    {isModalShowing && (
+                        <Modal setIsModalShowing={setIsModalShowing} />
+                    )}
+                </div>
+            </div>
         </div>
     )
+}
+
+export async function getServerSideProps(context) {
+    const data = await getData()
+    return {
+        props: { data },
+    }
 }

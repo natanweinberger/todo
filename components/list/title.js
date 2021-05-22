@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import Delete from '@/components/svg/delete'
 
-const Title = ({ title, updateTitle }) => {
+const Title = ({ title, updateTitle, deleteList }) => {
     const [isInEditMode, setIsInEditMode] = useState(false)
 
     if (isInEditMode) {
@@ -23,12 +24,21 @@ const Title = ({ title, updateTitle }) => {
         )
     }
     return (
-        <span
-            className="font-bold py-1 self-center"
-            onClick={() => setIsInEditMode(true)}
-        >
-            {title}
-        </span>
+        <div className="flex group">
+            <div className="w-4" />
+            <span
+                className="flex-grow font-bold py-1 text-center"
+                onClick={() => setIsInEditMode(true)}
+            >
+                {title}
+            </span>
+            <div
+                className="w-4 invisible group-hover:visible self-center"
+                onClick={deleteList}
+            >
+                <Delete />
+            </div>
+        </div>
     )
 }
 

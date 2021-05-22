@@ -1,10 +1,11 @@
+import { useEffect } from 'react'
 import Delete from '@/components/svg/delete'
 
 const Card = ({
     title,
     isBlocked,
     isEditable,
-    setBlocked,
+    toggleCardBlocked,
     addCard,
     hideAddCard,
     deleteCard,
@@ -33,7 +34,7 @@ const Card = ({
                 />
             ) : (
                 <div className="flex w-full">
-                    <div className="flex-grow p-1" onClick={setBlocked}>
+                    <div className="flex-grow p-1" onClick={toggleCardBlocked}>
                         {title}
                     </div>
                     <div

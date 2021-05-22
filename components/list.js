@@ -3,87 +3,50 @@ import { mutate } from 'swr'
 import Card from '@/components/Card'
 import Title from '@/components/list/title'
 import DraggableList from '@/components/list/draggableList'
-import { reorder } from '@/components/list/utils'
+import {
+    reorder,
+    sendReorder,
+    toggleCardBlocked,
+    addCard,
+    patchList,
+} from '@/components/list/utils'
 
-const List = ({ list, list_id, updateList }) => {
+const List = ({ list_id, list, updateList }) => {
     const { title, cards } = list
     const [showAddCard, setShowAddCard] = useState(false)
-
-    const setCardBlocked = (index) => {
-        let updatedCards = [...cards]
-        updatedCards[index] = {
-            ...cards[index],
-            isBlocked: !cards[index].isBlocked,
-        }
-        sendListUpdate({ ...list, cards: updatedCards })
-    }
-
-    const sendListUpdate = async (payload) => {
-        mutate(
-            '/api/lists',
-            (lists) => ({ ...lists, [list_id]: payload }),
-            false
-        )
-        mutate('/api/lists', async (lists) => {
-            const updatedList = await fetch(`/api/lists/${list_id}`, {
-                method: 'PATCH',
-                body: JSON.stringify(payload),
-            })
-
-            lists[list_id] = updatedList
-            return lists
-        })
-    }
-
-    const addCard = (title) => {
-        const newCard = {
-            id: `${cards.length}`,
-            title,
-            isBlocked: false,
-            position: cards.length,
-        }
-        const payload = { ...list, cards: [...cards, newCard] }
-        sendListUpdate(payload)
-
-        setShowAddCard(false)
-    }
 
     const deleteCard = (id) => {
         const payload = {
             ...list,
             cards: cards.filter((card) => card.id != id),
         }
-        sendListUpdate(payload)
+        patchList(list_id, payload)
     }
 
-    const onEscapeEffect = (event, callback) => {
-        if (event.key == 'Escape') {
-            callback()
-        }
-    }
-
-    useEffect(() => window.addEventListener('keydown', (event) => onEscapeEffect(event, setShowAddCard(false))))
-
-    const sendReorder = (cards, result) => {
-        sendListUpdate({
-            ...list,
-            cards: reorder(
-                cards,
-                result.source.index,
-                result.destination.index
-            ),
+    const deleteList = async () => {
+        mutate(
+            '/api/lists',
+            function ({ [list_id]: { ...list }, ...otherLists }) {
+                return otherLists
+            },
+            false
+        )
+        await fetch(`/api/lists/${list_id}`, {
+            method: 'DELETE',
         })
+        mutate('/api/lists')
     }
 
     return (
         <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-gray-200 overflow-x-auto flex-shrink-0 transition-all">
             <Title
                 title={title}
-                updateTitle={(title) => sendListUpdate({ ...list, title })}
+                updateTitle={(title) => patchList(list_id, { ...list, title })}
+                deleteList={deleteList}
             />
             <div className="flex-grow p-1">
                 <DraggableList
-                    onDragEnd={(result) => sendReorder(cards, result)}
+                    onDragEnd={(result) => sendReorder(list_id, list, result)}
                     items={cards}
                     component={(card, index) => (
                         <Card
@@ -91,7 +54,9 @@ const List = ({ list, list_id, updateList }) => {
                             key={card.id}
                             isBlocked={card.isBlocked}
                             deleteCard={() => deleteCard(card.id)}
-                            setBlocked={() => setCardBlocked(index)}
+                            toggleCardBlocked={() =>
+                                toggleCardBlocked(list_id, list, index)
+                            }
                         />
                     )}
                 />
@@ -99,7 +64,10 @@ const List = ({ list, list_id, updateList }) => {
                     <Card
                         key="addCard"
                         isEditable={true}
-                        addCard={addCard}
+                        addCard={(title) => {
+                            setShowAddCard(false)
+                            addCard(list_id, list, title)
+                        }}
                         hideAddCard={() => setShowAddCard(false)}
                     />
                 )}
