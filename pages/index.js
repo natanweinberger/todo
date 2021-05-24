@@ -1,6 +1,6 @@
-import List from '../components/List'
-import Modal from '../components/Modal'
-import { useAuth } from '../lib/auth'
+import List from '@/components/list/list'
+import Modal from '@/components/Modal'
+import Header from '@/components/header'
 import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
 import { getData } from '@/lib/db'
@@ -21,35 +21,6 @@ const onEscapeEffect = (event, callback) => {
     if (event.key == 'Escape') {
         callback()
     }
-}
-
-const Header = () => {
-    const auth = useAuth()
-    return (
-        <div className="flex px-4 mt-2 text-white justify-between items-center">
-            <div>
-                Current user: <code>{auth?.user?.email || 'None'}</code>
-            </div>
-            {!auth.user && (
-                <button
-                    className="bg-white text-blue-400 p-2 rounded"
-                    onClick={(e) =>
-                        auth.signin('naweinberger@gmail.com', 'password')
-                    }
-                >
-                    Sign In
-                </button>
-            )}
-            {auth.user && (
-                <button
-                    className="bg-white text-blue-400 p-2 rounded"
-                    onClick={(e) => auth.signout()}
-                >
-                    Sign Out
-                </button>
-            )}
-        </div>
-    )
 }
 
 export default function Home({ data }) {
@@ -103,13 +74,13 @@ export default function Home({ data }) {
     return (
         <div className="absolute inset-0">
             {/* Fix viewport height on mobile: https://stackoverflow.com/a/66501522/804237 */}
-            <div className="flex flex-col h-full bg-blue-400">
+            <div className="flex flex-col h-full bg-yellow-50 bg-opacity-100 dark:bg-black">
                 <Header />
                 <div className="flex flex-grow overflow-x-auto p-2">
                     {(lists && showLists(lists)) ||
                         showLists({ list_4: { title: 'waiting', cards: [] } })}
                     <div
-                        className="flex flex-none rounded-full h-12 w-12 mx-2 items-center justify-center self-center bg-white hover:bg-gray-200 active:bg-gray-300"
+                        className="flex rounded-full h-12 w-12 mx-2 items-center justify-center self-center text-white bg-umber opacity-70 hover:opacity-90 active:opacity-100"
                         onClick={addList}
                     >
                         <div>+</div>

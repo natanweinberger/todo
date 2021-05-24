@@ -6,7 +6,7 @@ const Title = ({ title, updateTitle, deleteList }) => {
 
     if (isInEditMode) {
         return (
-            <span className="font-bold py-1 self-center">
+            <span className="font-bold py-1 dark:text-white self-center">
                 <input
                     className="pl-1"
                     autoFocus
@@ -24,8 +24,8 @@ const Title = ({ title, updateTitle, deleteList }) => {
         )
     }
     return (
-        <div className="flex group">
-            <div className="w-4" />
+        <div className="flex group dark:text-white">
+            <div className="w-6" />
             <span
                 className="flex-grow font-bold py-1 text-center"
                 onClick={() => setIsInEditMode(true)}
@@ -33,7 +33,7 @@ const Title = ({ title, updateTitle, deleteList }) => {
                 {title}
             </span>
             <div
-                className="w-4 invisible group-hover:visible self-center"
+                className="w-6 invisible group-hover:visible self-center"
                 onClick={deleteList}
             >
                 <Delete />

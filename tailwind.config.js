@@ -1,10 +1,11 @@
 module.exports = {
     purge: ['./pages/**/*.{js}', './components/**/*.{js}'],
-    darkMode: false, // or 'media' or 'class'
+    darkMode: 'media', // or 'media' or 'class'
     theme: {
         extend: {
             colors: {
-                amber: '#5f27cd',
+                antique: '#FBFBFB',
+                umber: '#7C6354',
             },
         },
     },
@@ -14,6 +15,7 @@ module.exports = {
             cursor: ['hover'],
             fill: ['hover'],
             backgroundColor: ['active'],
+            opacity: ['active'],
         },
     },
     plugins: [],

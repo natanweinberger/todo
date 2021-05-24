@@ -38,13 +38,13 @@ const List = ({ list_id, list, updateList }) => {
     }
 
     return (
-        <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-gray-200 overflow-x-auto flex-shrink-0 transition-all">
+        <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-antique dark:bg-gray-700 shadow-lg flex-shrink-0">
             <Title
                 title={title}
                 updateTitle={(title) => patchList(list_id, { ...list, title })}
                 deleteList={deleteList}
             />
-            <div className="flex-grow p-1">
+            <div className="flex-grow p-1 overflow-y-auto">
                 <DraggableList
                     onDragEnd={(result) => sendReorder(list_id, list, result)}
                     items={cards}

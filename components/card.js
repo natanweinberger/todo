@@ -18,7 +18,7 @@ const Card = ({
             ${
                 isBlocked
                     ? 'bg-gray-200 hover:bg-green-300 text-gray-700'
-                    : 'bg-gray-50 hover:bg-green-100'
+                    : 'bg-white hover:bg-green-100'
             } `}
         >
             {isEditable ? (

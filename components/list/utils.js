@@ -10,6 +10,12 @@ export const reorder = (list, startIndex, targetIndex) => {
 }
 
 export const sendReorder = (list_id, list, result) => {
+    if (!result.destination) {
+        return
+    }
+    if (result.source.index == result.destination.index) {
+        return
+    }
     patchList(list_id, {
         ...list,
         cards: reorder(
