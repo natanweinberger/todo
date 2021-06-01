@@ -19,7 +19,8 @@ const post = (req, res) => {
     const id = uuid()
     console.log(`Creating new list with id ${id}`)
     let contents = readFromFile(FILENAME)
-    contents[id] = { title: 'New list', cards: [] }
+    contents.lists[id] = { title: 'New list', cards: [] }
+    contents.order.push(id)
     writeToFile(FILENAME, JSON.stringify(contents))
 
     res.statusCode = 200

@@ -26,8 +26,19 @@ const List = ({ list_id, list, updateList }) => {
     const deleteList = async () => {
         mutate(
             '/api/lists',
-            function ({ [list_id]: { ...list }, ...otherLists }) {
-                return otherLists
+            function ({
+                order: [...order],
+                lists: {
+                    [list_id]: { ...list },
+                    ...otherLists
+                },
+            }) {
+                const result = {
+                    order: order.filter((item) => item != list_id),
+                    lists: { ...otherLists },
+                }
+                console.log(result)
+                return result
             },
             false
         )
@@ -48,6 +59,7 @@ const List = ({ list_id, list, updateList }) => {
                 <DraggableList
                     onDragEnd={(result) => sendReorder(list_id, list, result)}
                     items={cards}
+                    droppableId="droppable"
                     component={(card, index) => (
                         <Card
                             title={card.title}
@@ -66,7 +78,7 @@ const List = ({ list_id, list, updateList }) => {
                         isEditable={true}
                         addCard={(title) => {
                             setShowAddCard(false)
-                            addCard(list_id, list, title)
+                            addCard(list_id, title)
                         }}
                         hideAddCard={() => setShowAddCard(false)}
                     />

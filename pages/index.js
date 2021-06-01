@@ -11,7 +11,8 @@ const useLists = () => {
     const { data, error } = useSWR('/api/lists', fetcher)
 
     return {
-        lists: data,
+        lists: data?.lists,
+        order: data?.order,
         isLoading: !error && !data,
         isError: error,
     }
@@ -23,10 +24,10 @@ const onEscapeEffect = (event, callback) => {
     }
 }
 
-export default function Home({ data }) {
+export default function Home() {
     const [isModalShowing, setIsModalShowing] = useState(false)
 
-    const { lists } = useLists()
+    const { lists, order } = useLists()
 
     const updateList = async (list_id, list, send = true) => {
         mutate('/api/lists', { ...lists, [list_id]: list }, false)
@@ -60,7 +61,9 @@ export default function Home({ data }) {
                     list_id={key}
                     list={lists[key]}
                     setIsModalShowing={setIsModalShowing}
-                    updateList={(updatedList) => updateList(key, updatedList)}
+                    updateList={(updatedList) =>
+                        updateList(lists[key], updatedList)
+                    }
                 />
             )
         })
@@ -78,7 +81,7 @@ export default function Home({ data }) {
                 <Header />
                 <div className="flex flex-grow overflow-x-auto p-2">
                     {(lists && showLists(lists)) ||
-                        showLists({ list_4: { title: 'waiting', cards: [] } })}
+                        showLists({ temp: { title: 'waiting', cards: [] } })}
                     <div
                         className="flex rounded-full h-12 w-12 mx-2 items-center justify-center self-center text-white bg-umber opacity-70 hover:opacity-90 active:opacity-100"
                         onClick={addList}

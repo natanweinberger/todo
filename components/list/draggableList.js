@@ -1,10 +1,16 @@
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 // Each item must have a field 'id'
-const DraggableList = ({ items, component, onDragEnd }) => {
+const DraggableList = ({
+    items,
+    component,
+    onDragEnd,
+    droppableId,
+    direction,
+}) => {
     return (
         <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
-            <Droppable droppableId="droppable">
+            <Droppable droppableId={droppableId} direction={direction}>
                 {(provided, snapshot) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
                         {items.map((item, index) => (
