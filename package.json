@@ -11,7 +11,9 @@
     "dependencies": {
         "@prisma/client": "^2.24.1",
         "firebase": "^8.6.1",
+        "mysql": "^2.18.1",
         "next": "10.x",
+        "next-auth": "^3.25.0",
         "prettier": "^2.2.1",
         "react": "17.x",
         "react-beautiful-dnd": "^13.1.0",
