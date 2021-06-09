@@ -1,0 +1,4 @@
+FROM mysql:8.0
+
+# Set the root password
+ENV MYSQL_ROOT_PASSWORD=password

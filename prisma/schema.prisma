@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model user {
+  id    String  @id @default(uuid())
+  email String  @unique
+  name  String?
+  lists list[]
+  cards card[]
+}
+
+model board {
+  id    String @id @default(uuid())
+  lists list[]
+}
+
+model list {
+  id         String @id @default(uuid())
+  title      String
+  board_id   String
+  board      board  @relation(fields: [board_id], references: [id])
+  creator_id String
+  creator    user   @relation(fields: [creator_id], references: [id])
+
+  cards card[]
+}
+
+model card {
+  id         String      @id @default(uuid())
+  text       String      @db.Text
+  list_id    String
+  list       list        @relation(fields: [list_id], references: [id])
+  status_id  Int
+  status     card_status @relation(fields: [status_id], references: [id])
+  creator_id String
+  creator    user        @relation(fields: [creator_id], references: [id])
+
+}
+
+model card_status {
+  id    Int    @id
+  value String
+  cards card[]
+}

@@ -3,12 +3,13 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "NODE_ENV=development next dev",
+        "dev": "NODE_OPTIONS='--inspect' next dev",
         "build": "next build",
         "start": "next start",
         "prettier": "npx prettier --write {,**/}**/*.{js,json}"
     },
     "dependencies": {
+        "@prisma/client": "^2.24.1",
         "firebase": "^8.6.1",
         "next": "10.x",
         "prettier": "^2.2.1",
@@ -24,6 +25,7 @@
         "eslint-plugin-react": "^7.23.2",
         "eslint-plugin-react-hooks": "^4.2.0",
         "postcss": "^8.2.13",
+        "prisma": "^2.24.1",
         "tailwindcss": "^2.1.2"
     }
 }

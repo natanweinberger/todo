@@ -4,18 +4,15 @@ import Header from '@/components/header'
 import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
 import { getData } from '@/lib/db'
+import { useAuth } from '@/lib/auth'
 
-const fetcher = (url) => fetch(url).then((r) => r.json())
+const fetcher = async (url, token) => {
+    const res = await fetch(url, {
+        method: 'GET',
+        headers: new Headers({ 'Content-Type': 'application/json', token }),
+    })
 
-const useLists = () => {
-    const { data, error } = useSWR('/api/lists', fetcher)
-
-    return {
-        lists: data?.lists,
-        order: data?.order,
-        isLoading: !error && !data,
-        isError: error,
-    }
+    return res.json()
 }
 
 const onEscapeEffect = (event, callback) => {
@@ -25,9 +22,24 @@ const onEscapeEffect = (event, callback) => {
 }
 
 export default function Home() {
+    const { user } = useAuth()
+
+    if (!user) {
+        return <p>Not logged in</p>
+    }
+
+    const useLists = () => {
+        const { data, error } = useSWR(['/api/lists', 'natan'], fetcher)
+        return {
+            lists: data?.lists,
+            order: data?.order,
+            isLoading: !error && !data,
+            isError: error,
+        }
+    }
     const [isModalShowing, setIsModalShowing] = useState(false)
 
-    const { lists, order } = useLists()
+    const { lists } = useLists()
 
     const updateList = async (list_id, list, send = true) => {
         mutate('/api/lists', { ...lists, [list_id]: list }, false)
@@ -67,12 +79,6 @@ export default function Home() {
                 />
             )
         })
-
-    useEffect(() =>
-        window.addEventListener('keydown', (event) =>
-            onEscapeEffect(event, () => console.log('test'))
-        )
-    )
 
     return (
         <div className="absolute inset-0">
