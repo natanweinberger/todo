@@ -1,26 +1,25 @@
-import { useAuth } from '../lib/auth'
+import { signIn, signOut, useSession } from 'next-auth/client'
 
 const Header = () => {
-    const auth = useAuth()
+    const [session, loading] = useSession()
+
     return (
         <div className="flex px-4 mt-2 justify-between items-center">
             <div>
-                Current user: <code>{auth?.user?.email || 'None'}</code>
+                Signed in as <code>{session?.user?.name || 'None'}</code>
             </div>
-            {!auth.user && (
+            {!session?.user && (
                 <button
-                    className="bg-umber opacity-80 text-white text-sm p-2 rounded"
-                    onClick={(e) =>
-                        auth.signin('naweinberger@gmail.com', 'password')
-                    }
+                    className="bg-black opacity-80 text-white text-sm p-2 rounded"
+                    onClick={() => signIn('github')}
                 >
                     Sign In
                 </button>
             )}
-            {auth.user && (
+            {session?.user && (
                 <button
-                    className="bg-umber opacity-80 text-white text-sm p-2 rounded"
-                    onClick={(e) => auth.signout()}
+                    className="bg-black opacity-80 text-white dark:bg-white dark:text-black text-sm p-2 rounded"
+                    onClick={() => signOut()}
                 >
                     Sign Out
                 </button>

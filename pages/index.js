@@ -4,7 +4,7 @@ import Header from '@/components/header'
 import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
 import { getData } from '@/lib/db'
-import { useAuth } from '@/lib/auth'
+import { signIn, signOut, useSession } from 'next-auth/client'
 
 const fetcher = async (url, token) => {
     const res = await fetch(url, {
@@ -22,11 +22,7 @@ const onEscapeEffect = (event, callback) => {
 }
 
 export default function Home() {
-    const { user } = useAuth()
-
-    if (!user) {
-        return <p>Not logged in</p>
-    }
+    const [session, loading] = useSession()
 
     const useLists = () => {
         const { data, error } = useSWR(['/api/lists', 'natan'], fetcher)
@@ -89,7 +85,7 @@ export default function Home() {
                     {(lists && showLists(lists)) ||
                         showLists({ temp: { title: 'waiting', cards: [] } })}
                     <div
-                        className="flex rounded-full h-12 w-12 mx-2 items-center justify-center self-center text-white bg-umber opacity-70 hover:opacity-90 active:opacity-100"
+                        className="flex rounded-full h-12 w-12 mx-2 items-center justify-center self-center text-white bg-black opacity-70 hover:opacity-90 active:opacity-100"
                         onClick={addList}
                     >
                         <div>+</div>

@@ -1,20 +1,27 @@
 import { v4 as uuid } from 'uuid'
 import { FILENAME, readFromFile, writeToFile } from '../../common'
 import { firestore } from '@/lib/db'
+import { getSession } from 'next-auth/client'
 
 export default async (req, res) => {
-    switch (req.method) {
-        case 'POST':
-            post(req, res)
-            break
-        case 'PATCH':
-            patch(req, res)
-            break
-        case 'GET':
-            get(req, res)
-            break
-    }
+    const session = await getSession({ req })
+    console.log(session)
+    res.end()
 }
+
+// export default async (req, res) => {
+//     switch (req.method) {
+//         case 'POST':
+//             post(req, res)
+//             break
+//         case 'PATCH':
+//             patch(req, res)
+//             break
+//         case 'GET':
+//             get(req, res)
+//             break
+//     }
+// }
 
 const createList = async (uid, title) => {
     const id = uuid()
