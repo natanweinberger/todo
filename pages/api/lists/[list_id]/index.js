@@ -1,9 +1,10 @@
-import { FILENAME, readFromFile, writeToFile } from '../../../common'
+import { getSession } from 'next-auth/client'
+import { prisma } from '@/lib/prisma'
 
-export default (req, res) => {
+export default async (req, res) => {
     switch (req.method) {
         case 'POST':
-            post(req, res)
+            // post(req, res)
             break
         case 'PATCH':
             patch(req, res)
@@ -12,41 +13,44 @@ export default (req, res) => {
             del(req, res)
             break
         case 'GET':
-            get(req, res)
+            // get(req, res)
             break
     }
 }
 
 const patch = async (req, res) => {
+    const session = await getSession({ req })
     const { list_id } = req.query
-    const updatedList = JSON.parse(req.body)
+    const { title } = req.body
 
-    updateListById(list_id, updatedList)
+    const result = await prisma.list.update({
+        where: {
+            id: list_id,
+        },
+        data: {
+            title,
+        },
+    })
 
     res.statusCode = 200
-    res.json({ message: 'ok' })
+    res.json(result)
 }
 
-const get = (req, res) => {
-    const { list_id } = req.query
-    res.statusCode = 200
-    res.json(readFromFile(FILENAME).lists[list_id])
-}
-
-const del = (req, res) => {
+const del = async (req, res) => {
+    const session = await getSession({ req })
     const { list_id } = req.query
 
-    let data = readFromFile(FILENAME)
-    delete data.lists[list_id]
-    data.order = data.order.filter((item) => item != list_id)
-    writeToFile(FILENAME, JSON.stringify(data))
+    await prisma.card.deleteMany({
+        where: {
+            list_id: list_id,
+        },
+    })
+    const result = await prisma.list.delete({
+        where: {
+            id: list_id,
+        },
+    })
 
     res.statusCode = 200
-    res.json({ message: 'ok' })
-}
-
-const updateListById = (id, updatedList) => {
-    let data = readFromFile(FILENAME)
-    data.lists[id] = updatedList
-    writeToFile(FILENAME, JSON.stringify(data))
+    res.json(result)
 }

@@ -1,73 +1,55 @@
 import { v4 as uuid } from 'uuid'
 import { FILENAME, readFromFile, writeToFile } from '../../common'
-import { firestore } from '@/lib/db'
 import { getSession } from 'next-auth/client'
+import { prisma } from '@/lib/prisma'
 
 export default async (req, res) => {
-    const session = await getSession({ req })
-    console.log(session)
-    res.end()
+    switch (req.method) {
+        case 'POST':
+            post(req, res)
+            break
+        case 'PATCH':
+            patch(req, res)
+            break
+        case 'GET':
+            get(req, res)
+            break
+    }
 }
 
-// export default async (req, res) => {
-//     switch (req.method) {
-//         case 'POST':
-//             post(req, res)
-//             break
-//         case 'PATCH':
-//             patch(req, res)
-//             break
-//         case 'GET':
-//             get(req, res)
-//             break
-//     }
-// }
-
-const createList = async (uid, title) => {
-    const id = uuid()
-    const newList = { title, cards: [] }
-
-    const result = await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('lists')
-        .doc(id)
-        .set(newList)
-
-    return { [id]: newList }
-}
-
-const getLists = async (uid) => {
-    const data = await firestore
-        .collection('users')
-        .doc(uid)
-        .collection('lists')
-        .get()
-
-    let result = {}
-    data.docs.forEach((doc) => (result[doc.id] = doc.data()))
-    return result
-}
 const post = async (req, res) => {
-    const { uid } = req.query
+    // Get the user
+    const session = await getSession({ req })
+
     const { title } = req.body
-    const result = await createList(uid, title)
+    const id = uuid()
+
+    const result = await prisma.list.create({
+        data: {
+            id,
+            title,
+            creator_id: session.user.id,
+        },
+    })
 
     res.statusCode = 200
     res.json(result)
 }
 
-const patch = (req, res) => {
-    const contents = req.body
-    writeToFile(FILENAME, contents)
-    res.statusCode = 200
-    res.json({ message: 'ok' })
-}
-
 const get = async (req, res) => {
-    const { uid } = req.query
-    const data = await getLists(uid)
-    const response = { order: [], lists: data }
+    const session = await getSession({ req })
+    const response = await prisma.list.findMany({
+        where: {
+            creator_id: session.user.id,
+        },
+        include: {
+            cards: {
+                include: {
+                    status: true,
+                },
+            },
+        },
+    })
     res.statusCode = 200
     res.json(response)
 }

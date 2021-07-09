@@ -24,26 +24,53 @@ const List = ({ list_id, list, updateList }) => {
     }
 
     const deleteList = async () => {
+        await fetch(`/api/lists/${list_id}`, {
+            method: 'DELETE',
+        })
+        mutate('/api/lists')
+    }
+
+    // Advanced: PATCH and use result to mutate
+    // const updateTitle = async (title) => {
+    //     mutate('/api/lists', async (lists) => {
+    //         const updatedList = await fetch(`/api/lists/${list_id}`, {
+    //             method: 'PATCH',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ title }),
+    //         }).then((res) => res.json())
+    //         const result = lists.map((list) => {
+    //             if (list.id == list_id) {
+    //                 return { ...list, ...updatedList }
+    //             } else {
+    //                 return list
+    //             }
+    //         })
+    //         return result
+    //     })
+    // }
+
+    // Naive: PATCH and GET
+    const updateTitle = async (title) => {
         mutate(
             '/api/lists',
-            function ({
-                order: [...order],
-                lists: {
-                    [list_id]: { ...list },
-                    ...otherLists
-                },
-            }) {
-                const result = {
-                    order: order.filter((item) => item != list_id),
-                    lists: { ...otherLists },
-                }
-                console.log(result)
-                return result
+            (lists) => {
+                return lists.map((l) => {
+                    if (l.id == list_id) {
+                        return { ...l, title }
+                    }
+                    return l
+                })
             },
             false
         )
         await fetch(`/api/lists/${list_id}`, {
-            method: 'DELETE',
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title }),
         })
         mutate('/api/lists')
     }
@@ -52,7 +79,7 @@ const List = ({ list_id, list, updateList }) => {
         <div className="flex flex-col w-72 rounded-md p-1 mr-2 bg-antique dark:bg-gray-700 shadow-lg flex-shrink-0">
             <Title
                 title={title}
-                updateTitle={(title) => patchList(list_id, { ...list, title })}
+                updateTitle={updateTitle}
                 deleteList={deleteList}
             />
             <div className="flex-grow p-1 overflow-y-auto">
@@ -62,7 +89,7 @@ const List = ({ list_id, list, updateList }) => {
                     droppableId="droppable"
                     component={(card, index) => (
                         <Card
-                            title={card.title}
+                            title={card.text}
                             key={card.id}
                             isBlocked={card.isBlocked}
                             deleteCard={() => deleteCard(card.id)}

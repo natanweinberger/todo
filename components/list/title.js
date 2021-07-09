@@ -6,7 +6,7 @@ const Title = ({ title, updateTitle, deleteList }) => {
 
     if (isInEditMode) {
         return (
-            <span className="font-bold py-1 dark:text-white self-center">
+            <span className="font-bold py-1 self-center">
                 <input
                     className="pl-1"
                     autoFocus

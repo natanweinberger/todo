@@ -3,7 +3,6 @@ import Modal from '@/components/Modal'
 import Header from '@/components/header'
 import { useState, useEffect } from 'react'
 import useSWR, { mutate } from 'swr'
-import { getData } from '@/lib/db'
 import { signIn, signOut, useSession } from 'next-auth/client'
 
 const fetcher = async (url, token) => {
@@ -25,10 +24,9 @@ export default function Home() {
     const [session, loading] = useSession()
 
     const useLists = () => {
-        const { data, error } = useSWR(['/api/lists', 'natan'], fetcher)
+        const { data, error } = useSWR('/api/lists', fetcher)
         return {
-            lists: data?.lists,
-            order: data?.order,
+            lists: data,
             isLoading: !error && !data,
             isError: error,
         }
@@ -49,29 +47,34 @@ export default function Home() {
     }
 
     const addList = async () => {
-        const tempId = 'temp'
         mutate(
             '/api/lists',
-            { ...lists, [tempId]: { title: 'New list', cards: [] } },
+            (lists) => {
+                return [...lists, { title: 'New list', cards: [] }]
+            },
             false
         )
         await fetch('/api/lists', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: 'New list',
+            }),
         })
         mutate('/api/lists')
     }
 
     const showLists = (lists) =>
-        Object.keys(lists).map((key) => {
+        lists.map((list) => {
             return (
                 <List
-                    key={key}
-                    list_id={key}
-                    list={lists[key]}
+                    key={list.id}
+                    list_id={list.id}
+                    list={list}
                     setIsModalShowing={setIsModalShowing}
-                    updateList={(updatedList) =>
-                        updateList(lists[key], updatedList)
-                    }
+                    updateList={(updatedList) => updateList(list, updatedList)}
                 />
             )
         })
@@ -82,8 +85,7 @@ export default function Home() {
             <div className="flex flex-col h-full bg-yellow-50 bg-opacity-100 dark:bg-black">
                 <Header />
                 <div className="flex flex-grow overflow-x-auto p-2">
-                    {(lists && showLists(lists)) ||
-                        showLists({ temp: { title: 'waiting', cards: [] } })}
+                    {(lists && showLists(lists)) || 'Waiting'}
                     <div
                         className="flex rounded-full h-12 w-12 mx-2 items-center justify-center self-center text-white bg-black opacity-70 hover:opacity-90 active:opacity-100"
                         onClick={addList}
@@ -98,11 +100,4 @@ export default function Home() {
             </div>
         </div>
     )
-}
-
-export async function getServerSideProps(context) {
-    const data = await getData()
-    return {
-        props: { data },
-    }
 }
